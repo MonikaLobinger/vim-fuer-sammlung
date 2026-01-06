@@ -1,36 +1,43 @@
 import {App, PluginSettingTab, Setting} from "obsidian";
-import MyPlugin from "./main";
+import VimSammlung from "./main";
 
-export interface MyPluginSettings {
-	mySetting: string;
+export const enum vimStatus {
+  normal =  'normal',
+  insert =  'insert',
+  visual =  'visual',
+  replace = 'replace',
+}
+export type VimStatusPrompt = string;
+export type VimStatusPromptMap = {
+  [status in vimStatus]: VimStatusPrompt;
+};
+export interface VimSammlungSettings {
+  exmpSetting: string;
+  vimStatusPromptMap: VimStatusPromptMap;
 }
 
-export const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
-}
+export class VimSammlungSettingTab extends PluginSettingTab {
+  plugin: VimSammlung;
 
-export class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+  constructor(app: App, plugin: VimSammlung) {
+    super(app, plugin);
+    this.plugin = plugin;
+  }
 
-	constructor(app: App, plugin: MyPlugin) {
-		super(app, plugin);
-		this.plugin = plugin;
-	}
+  display(): void {
+    const {containerEl} = this;
 
-	display(): void {
-		const {containerEl} = this;
+    containerEl.empty();
 
-		containerEl.empty();
-
-		new Setting(containerEl)
-			.setName('Settings #1')
-			.setDesc('It\'s a secret')
-			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
-				.onChange(async (value) => {
-					this.plugin.settings.mySetting = value;
-					await this.plugin.saveSettings();
-				}));
-	}
+    new Setting(containerEl)
+      .setName('Settings #1')
+      .setDesc('It\'s a secret')
+      .addText(text => text
+        .setPlaceholder('Enter your secret')
+        .setValue(this.plugin.settings.mySetting)
+        .onChange(async (value) => {
+          this.plugin.settings.mySetting = value;
+          await this.plugin.saveSettings();
+        }));
+  }
 }
