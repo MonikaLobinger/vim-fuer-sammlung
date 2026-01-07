@@ -17,7 +17,7 @@ const DEFAULT_SETTINGS: VimSammlungSettings = {
     replace: '🔴',
   },
 }
-const vimStatusPromptClass = "vim-sammlung-vim-mode";
+const vimStatusCssClass = "vim-sammlung-statusbar";
 export default class VimSammlung extends Plugin {
   settings: VimSammlungSettings;
   private initialized = false;
@@ -54,10 +54,14 @@ export default class VimSammlung extends Plugin {
   prepareVimModeDisplay() {
     console.log("prepareVimModeDisplay")
     this.vimStatusBar = this.addStatusBarItem()
+    let parent = this.vimStatusBar.parentElement;
+    parent.insertBefore(this.vimStatusBar, parent.firstChild);
+    this.vimStatusBar.addClass(vimStatusCssClass);
+    this.vimStatusBar.style.marginRight = "auto";
+
     this.vimStatusBar.setText(
       this.settings.vimStatusPromptMap[this.currentVimStatus]
     );
-    this.vimStatusBar.addClass(vimStatusPromptClass);
     this.vimStatusBar.dataset.vimMode = this.currentVimStatus;
   }
   updateVimStatusBar() {
@@ -179,6 +183,7 @@ export default class VimSammlung extends Plugin {
   }
   onunload() {
     console.log("VimSammlung OnUnload")
+    this.vimStatusBar.remove()
   }
   async loadSettings() {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as Partial<VimSammlungSettings>);
